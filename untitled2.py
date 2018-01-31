@@ -19,11 +19,12 @@ y = dataset.iloc[:, 11].values
 from sklearn.model_selection import train_test_split
 X_train,X_test,y_train,y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
 
-from sklearn.decomposition import PCA
-pca = PCA(n_components = 5)
-X_train = pca.fit_transform(X_train)
-X_test = pca.fit_transform(X_test)
-explained_variance = pca.explained_variance_ratio_
+#Feature scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test  = sc.transform(X_test)
+
 
 #Logistic Regression
 from sklearn.linear_model import LogisticRegression
@@ -97,11 +98,28 @@ y_pred7 = classifier7.predict(X_test)
 cm7 = confusion_matrix(y_test, y_pred7)
 67
 
-
+#k-fold Cross Validation
 from sklearn.model_selection import cross_val_score
 accuracies = cross_val_score(estimator = classifier7, X = X_train, y = y_train, cv = 10)
 accuracies.mean()
 accuracies.std()
+
+#Grid Search
+from sklearn.model_selection import GridSearchCV
+parameters = [{'criterion':['gini']},
+               {'criterion':['entropy']}]
+                
+gridsearch = GridSearchCV(estimator = classifier7,
+                          param_grid = parameters,
+                          scoring = 'accuracy',
+                          cv = 10,
+                          n_jobs = -1)
+
+gridsearch = gridsearch.fit(X_train, y_train)
+
+best_accuracy = gridsearch.best_score_
+best_parameters = gridsearch.best_params_
+
 
 
 
